@@ -29,31 +29,39 @@ const App = () => {
     );
 }
 */
-// SECTION LEFT OFF: passing state to child components
-const Display = (props) => {
-    return (
-        <div>{props.counter}</div>
-    );
-}
+
+// displays the counter value
+const Display = ({ counter }) => <div>{counter}</div>
+
+const Button = ({ onClick, text }) => (
+    <button onClick={onClick}>
+        {text}
+    </button>
+);
 
 const App = (props) => {
     const [ counter, setCounter ] = useState(0);
 
     // returns a func that sets counter to specified value
     // first func call: configures second function
-    const setToValue = (value) => () => setCounter(value);
+    const setToValue = (value) => setCounter(value);
 
     return (
         <div>
-            <div>{counter}</div>
-            <button onClick={setToValue(counter + 1)}>
-                plus
-            </button>
-            <button onClick={setToValue(0)}>
-                zero
-            </button>
-        </div>
-            
+            <Display counter={counter} />
+            <Button
+                onClick={() => setToValue(counter + 1)}
+                text='plus'
+            />
+            <Button
+                onClick={() => setToValue(counter - 1)}
+                text='minus'
+            />
+            <Button
+                onClick={() => setToValue(0)}
+                text='zero'
+            />
+        </div>   
     );
 }
 
