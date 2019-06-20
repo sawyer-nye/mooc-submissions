@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-/*
+/* A-B
 // props passed to the component are directly destructured into name and age
 const Hello = ({ name, age }) => {
     // defines func bornYear that returns year - age
@@ -30,6 +30,7 @@ const App = () => {
 }
 */
 
+/* C
 // displays the counter value
 const Display = ({ counter }) => <div>{counter}</div>
 
@@ -62,6 +63,100 @@ const App = (props) => {
                 text='zero'
             />
         </div>   
+    );
+}
+*/
+
+/* D.1
+// good example of CONDITIONAL RENDERING
+const History = ({allClicks}) => {
+    if (allClicks.length === 0) {
+        return (
+            <div>
+                the app is used by pressing the buttons
+            </div>
+        );
+    }
+
+    return (
+        <div>
+            button press history: {allClicks.join(' ')}
+        </div>
+    );
+}
+
+const Button = ({ onClick, text }) => (
+    <button onClick={onClick}>
+        {text}
+    </button>
+);
+
+// NOTE: hooks may only be called from INSIDE of a function body that defines a component
+const App = (props) => {
+    const [left, setLeft] = useState(0);
+    const [right, setRight] = useState(0);
+    const [allClicks, setAll] = useState([]);
+
+    const handleLeftClick = () => {
+        setAll(allClicks.concat('L'));
+        setLeft(left + 1);
+    }
+
+    const handleRightClick = () => {
+        setAll(allClicks.concat('R'));
+        setRight(right + 1);
+    }
+
+    //debugger;
+
+    return (
+        <div>
+            <div>
+                {left}
+                <Button onClick={handleLeftClick} text='left' />
+                <Button onClick={handleRightClick} text='right' />
+                {right}
+                <History allClicks={allClicks} />
+            </div>
+        </div>
+    );
+}
+*/
+
+/* D.2
+const App = (props) => {
+    const [value, setValue] = useState(10);
+
+    const hello = (who) => () => {
+            console.log('hello', who);
+        }
+
+    return (
+        <div>
+            {value}
+            <button onClick={hello('world')}>button</button>
+            <button onClick={hello('react')}>button</button>
+            <button onClick={hello('function')}>button</button>
+        </div>
+    );
+}
+*/
+
+// LEFT OFF: PASSING EVENT HANDLERS TO CHILD COMPONENTS
+const App = (props) => {
+    const [value, setValue] = useState(10);
+
+    const setToValue = (newValue) => {
+        setValue(newValue);
+    }
+
+    return (
+        <div>
+            {value}
+            <button onClick={() => setToValue(1000)}>thousand</button>
+            <button onClick={() => setToValue(0)}>reset</button>
+            <button onClick={() => setToValue(value + 1)}>increment</button>
+        </div>
     );
 }
 
