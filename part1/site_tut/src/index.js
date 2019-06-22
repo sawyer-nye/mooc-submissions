@@ -62,7 +62,7 @@ const App = (props) => {
                 onClick={() => setToValue(0)}
                 text='zero'
             />
-        </div>   
+        </div>
     );
 }
 */
@@ -142,8 +142,16 @@ const App = (props) => {
 }
 */
 
-// LEFT OFF: PASSING EVENT HANDLERS TO CHILD COMPONENTS
-const App = (props) => {
+// never define components inside of other components!!!
+const Display = props => <div>{props.value}</div>
+
+const Button = (props) => (
+    <button onClick={props.handleClick}>
+        {props.text}
+    </button>
+);
+
+const App = () => {
     const [value, setValue] = useState(10);
 
     const setToValue = (newValue) => {
@@ -152,10 +160,10 @@ const App = (props) => {
 
     return (
         <div>
-            {value}
-            <button onClick={() => setToValue(1000)}>thousand</button>
-            <button onClick={() => setToValue(0)}>reset</button>
-            <button onClick={() => setToValue(value + 1)}>increment</button>
+            <Display value={value} />
+            <Button handleClick={() => setToValue(1000)} text="thousand" />
+            <Button handleClick={() => setToValue(0)} text="reset" />
+            <Button handleClick={() => setToValue(value + 1)} text="increment" />
         </div>
     );
 }
