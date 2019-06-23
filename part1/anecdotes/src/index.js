@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-// LEFT OFF: ANECDOTES STEP 2
+// EVENT HANDLERS MUST ALWAYS BE A FUNCTION OR A REFERENCE TO A FUNCTION
 
 const anecdotes = [
   'If it hurts, do it more often.',
@@ -36,7 +36,7 @@ const App = ({ anecdotes }) => {
     setVotes(copy);
     getBestAnecdote(votes);
   }
-
+  
   const getBestAnecdote = (votes) => {
     const mostVotes = Math.max(...votes);
     console.log(votes[votes.indexOf(mostVotes)]);
