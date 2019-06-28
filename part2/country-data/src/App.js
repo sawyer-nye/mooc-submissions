@@ -24,10 +24,6 @@ const App = () => {
     setFilterState(event.target.value);
   }
 
-  // narrow countriesToShow down to those beginning with the filter
-  const countriesToShow = countryData.filter(country =>
-    country.name.toLowerCase().includes(filterState.toLowerCase()));
-
   const retrieveWeatherData = (capital) => {
     // request: http://api.apixu.com/v1/  current.json  ?key=f85db64b2eb746fe950220616192806&  q=CITY
     axios
@@ -45,6 +41,10 @@ const App = () => {
   }
 
   const getCountriesView = () => {
+    // narrow countriesToShow down to those beginning with the filter
+    const countriesToShow = countryData.filter(country =>
+      country.name.toLowerCase().includes(filterState.toLowerCase()));
+
     if (countriesToShow.length > 10) {
       return <p>Too many matches, specify another filter</p>
     }
