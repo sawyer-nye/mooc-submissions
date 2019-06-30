@@ -5,9 +5,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(68, 79, 85);
+  color: rgb(199, 199, 199);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+button {
+  margin: 0.5em 0em 0.5em 1.5em;
+}
+
+.red-text {
+  color: red;
 }

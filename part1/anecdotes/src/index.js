@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
+import './index.css';
+
 // EVENT HANDLERS MUST ALWAYS BE A FUNCTION OR A REFERENCE TO A FUNCTION
 
 const anecdotes = [
@@ -48,7 +50,7 @@ const App = ({ anecdotes }) => {
   return (
     <div>
       <h1>Anecdote of the day</h1>
-      <p>{anecdotes[selected]}</p>
+      <p className="red-text">{anecdotes[selected]}</p>
       <p>Has {votes[selected]} votes</p>
       <Button handleClick={() => updateVotes(votes, selected)} text="vote" />
       <Button handleClick={() => generateAnecdote(anecdotes)} text="next anecdote" />
