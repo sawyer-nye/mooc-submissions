@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Person from './components/Person';
+import personService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,12 +12,9 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect');
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled');
-        setPersons(response.data);
-      });
+    personService
+      .getAllPersons()
+      .then(persons => setPersons(persons));
   }, []);
 
   const personsFilter = (person) => person['name'].toLowerCase().includes(filterState.toLowerCase());
@@ -43,7 +40,7 @@ const App = () => {
 
   // handles new person creation
   const addPerson = (event) => {
-    // checks if person already exists in phonebook
+    // checks if newName already exists in phonebook
     if (persons.some((person) => person['name'].toLowerCase() === newName.toLowerCase())) {
       window.alert(`${newName} is already added to phonebook`);
     }
@@ -51,11 +48,26 @@ const App = () => {
       event.preventDefault(); // prevents a refresh of the page on submit
       const nameObject = { name: newName, number: newNumber };
 
-      setPersons(persons.concat(nameObject));
-      setNewName('');
-      setNewNumber('');
+      personService
+        .createPerson(nameObject)
+        .then(person => {
+          setPersons(persons.concat(person));
+          setNewName('');
+          setNewNumber('');
+        });
     }
-  }  
+  }
+
+  const removePerson = (person) => {
+    //event.preventDefault();
+    if (window.confirm("Delete " + person.name + "?")) {
+      personService
+        .deletePerson(person)
+        .then(
+          setPersons(persons.filter(entry => entry.name !== person.name))
+        );
+    }
+  }
 
   // retrieves persons to show and returns list of Person components
   const getPersons = () => personsToShow.map(person =>
@@ -63,6 +75,7 @@ const App = () => {
       key={person['name']}
       name={person['name']}
       number={person['number']}
+      deleteOnClick={() => removePerson(person)}
     />
   );
 
