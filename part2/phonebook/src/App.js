@@ -13,10 +13,11 @@ const App = () => {
   useEffect(() => {
     console.log('effect');
     personService
-      .getAllPersons()
+      .getAll()
       .then(persons => setPersons(persons));
   }, []);
 
+  // filter logic
   const personsFilter = (person) => person['name'].toLowerCase().includes(filterState.toLowerCase());
 
   // creates personsToShow list where it changes if filter field is any value besides ''
@@ -38,18 +39,30 @@ const App = () => {
     setFilterState(event.target.value);
   }
 
-  // handles new person creation
+  // handles new person creation and person updating
   const addPerson = (event) => {
-    // checks if newName already exists in phonebook
-    if (persons.some((person) => person['name'].toLowerCase() === newName.toLowerCase())) {
-      window.alert(`${newName} is already added to phonebook`);
+    event.preventDefault(); // prevents a refresh of the page on submit
+    const nameObject = { name: newName, number: newNumber };
+
+    // checks if newName already exists in phonebook, then checks if number is meant to be updated
+    if (persons.some((person) => person.name.toLowerCase() === nameObject.name.toLowerCase())) {
+      if (window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)) {
+        const oldPerson = persons.find(person => person.name.toLowerCase() === nameObject.name.toLowerCase());
+        nameObject.id = oldPerson.id;   // allows us to use PUT request with id
+
+        personService
+          .update(nameObject)
+          .then(response => {
+            // set persons to mapped copy of persons with single person's new number included
+            setPersons(persons.map(person => person.id === nameObject.id ? response.data : person));
+            setNewName('');
+            setNewNumber('');
+          });
+      }
     }
     else {
-      event.preventDefault(); // prevents a refresh of the page on submit
-      const nameObject = { name: newName, number: newNumber };
-
       personService
-        .createPerson(nameObject)
+        .create(nameObject)
         .then(person => {
           setPersons(persons.concat(person));
           setNewName('');
@@ -62,7 +75,7 @@ const App = () => {
     //event.preventDefault();
     if (window.confirm("Delete " + person.name + "?")) {
       personService
-        .deletePerson(person)
+        .remove(person)
         .then(
           setPersons(persons.filter(entry => entry.name !== person.name))
         );
