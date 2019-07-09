@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Person from './components/Person';
+import Notification from './components/Notification';
 import personService from './services/persons';
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filterState, setFilterState] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationType, setNotificationType] = useState(null);
 
   useEffect(() => {
     console.log('effect');
@@ -44,6 +47,7 @@ const App = () => {
     event.preventDefault(); // prevents a refresh of the page on submit
     const nameObject = { name: newName, number: newNumber };
 
+    // MODIFY PERSON'S ENTRY
     // checks if newName already exists in phonebook, then checks if number is meant to be updated
     if (persons.some((person) => person.name.toLowerCase() === nameObject.name.toLowerCase())) {
       if (window.confirm(`${newName} is already added to phonebook. Replace the old number with a new one?`)) {
@@ -57,9 +61,25 @@ const App = () => {
             setPersons(persons.map(person => person.id === nameObject.id ? response.data : person));
             setNewName('');
             setNewNumber('');
-          });
+            setNotificationType('added');
+            setNotificationMessage(`Updated ${response.data.name}`);
+            setTimeout(() => {
+              setNotificationType(null);
+              setNotificationMessage(null);
+            }, 3000);
+          })
+          .catch(err => {
+            console.log('fail');
+            setNotificationType('error');
+            setNotificationMessage(`Information of ${nameObject.name} has already been removed from server. Please refresh.`);
+            setTimeout(() => {
+              setNotificationType(null);
+              setNotificationMessage(null);
+            }, 3000);
+          })
       }
     }
+    // ADD PERSON
     else {
       personService
         .create(nameObject)
@@ -67,6 +87,12 @@ const App = () => {
           setPersons(persons.concat(person));
           setNewName('');
           setNewNumber('');
+          setNotificationType('added')
+          setNotificationMessage(`Added ${person.name}`);
+          setTimeout(() => {
+            setNotificationMessage(null);
+            setNotificationType(null);
+          }, 3000);
         });
     }
   }
@@ -95,6 +121,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={notificationMessage} type={notificationType}/>
 
       <Filter value={filterState} onChange={handleFilterChange} />
 
