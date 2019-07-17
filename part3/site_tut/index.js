@@ -1,4 +1,10 @@
-const http = require('http');
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+
+/* Takes JSON data of a request, transforms to object, then attaches to body property of
+ * request object before route handler is called. */
+app.use(bodyParser.json());
 
 let notes = [
   {
@@ -21,11 +27,66 @@ let notes = [
   }
 ]
 
-const app = http.createServer((request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' });
-  response.end(JSON.stringify(notes));
+const generateId = () => {
+  const maxId = notes.length > 0 
+  ? Math.max(...notes.map(n => n.id))
+  : 0;
+
+  return maxId + 1;
+}
+
+// Handle HTTP GET requests made to root
+app.get('/', (req, res) => {
+  res.send('<h1>Hello World!</h1>')
 });
 
-const port = 3001
-app.listen(port)
-console.log(`Server running on port ${port}`);
+// Handle HTTP GET requests made to /notes
+app.get('/notes', (req, res) => {
+  res.json(notes) // Send notes array as JSON formatted string
+});
+
+app.get('/notes/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const note = notes.find(note => note.id === id);
+
+  if (note) {
+    res.json(note);
+  } else {  // If note is undefined (all objects besides undefined are truthy)
+    res.status(404).end();
+  }
+});
+
+// Handle HTTP DELETE requests made to /notes/id
+app.delete('/notes/:id', (req, res) => {
+  const id = Number(req.params.id);
+  notes = notes.filter(note => note.id !== id); // Update the notes object to remove current note
+
+  res.status(204).end();
+})
+
+// Handle HTTP POST requests made to /notes
+app.post('/notes', (req, res) => {
+  const body = req.body;
+
+  if (!body.content) {
+    return res.status(400).json({
+      error: 'content missing'
+    });
+  }
+
+  const note = {
+    content: body.content,
+    important: body.important || false,
+    date: new Date(),
+    id: generateId(),
+  }
+
+  notes = notes.concat(note);
+
+  res.json(note);
+})
+
+const PORT = 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+});
