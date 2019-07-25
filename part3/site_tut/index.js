@@ -6,6 +6,17 @@ const bodyParser = require('body-parser');
  * request object before route handler is called. */
 app.use(bodyParser.json());
 
+// Implement our own middleware that prints info about every request sent to server
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method);
+  console.log('Path:  ', request.path);
+  console.log('Body:  ', request.body);
+  console.log('---');
+  next(); // Yields control to the next middleware
+}
+
+app.use(requestLogger);
+
 let notes = [
   {
     id: 1,
@@ -85,6 +96,13 @@ app.post('/notes', (req, res) => {
 
   res.json(note);
 })
+
+// Catch requests made to non-existent routes
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
