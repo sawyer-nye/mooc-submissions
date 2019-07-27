@@ -1,3 +1,5 @@
+// NOTES APP
+
 import React, { useState, useEffect } from 'react';
 import Note from './components/Note';
 import Notification from './components/Notification';
@@ -8,9 +10,9 @@ const App = (props) => {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [showAll, setShowAll] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('some error happened...');
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  // retrieve the notes from json server upon App render
+  // Retrieve the notes from json server upon App render
   useEffect(() => {
     noteService
       .getAll()
@@ -18,6 +20,21 @@ const App = (props) => {
         setNotes(initialNotes);
       });
   }, []);
+
+  // if showAll false, filter out all but important notes to display
+  const notesToShow = showAll
+    ? notes
+    : notes.filter(note => note.important);
+
+  const rows = () => notesToShow.map(note =>
+    <Note
+      key={note.id}
+      note={note}
+      toggleImportance={() => toggleImportanceOf(note.id)}
+    />
+  );
+
+
 
   const toggleImportanceOf = (id) => {
     const note = notes.find(n => n.id === id);
@@ -55,19 +72,6 @@ const App = (props) => {
         setNewNote('');
       });
   }
-
-  const rows = () => notesToShow.map(note =>
-    <Note
-      key={note.id}
-      note={note}
-      // give every note a unique event handler function
-      toggleImportance={() => toggleImportanceOf(note.id)}
-    />
-  );
-
-  // if showAll false, filter out all but important notes to display
-  const notesToShow = showAll ? 
-    notes : notes.filter(note => note.important);
 
   const handleNoteChange = (event) => {
     // target refers to the input field of form
