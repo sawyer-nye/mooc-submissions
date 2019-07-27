@@ -1,6 +1,11 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+
+// Allow Cross-Origin Resource Sharing
+app.use(cors());
 
 /* Takes JSON data of a request, transforms to object, then attaches to body property of
  * request object before route handler is called. */
